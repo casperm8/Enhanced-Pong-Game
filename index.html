@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Pong Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1>🎮 PONG</h1>
+            <div class="game-info">
+                <p class="info-text" id="gameMode">Desktop Mode</p>
+                <p class="info-text" id="difficulty">Difficulty: <span>Medium</span></p>
+            </div>
+        </div>
+
+        <div class="game-wrapper">
+            <div class="scoreboard">
+                <div class="score-section player">
+                    <h2>PLAYER</h2>
+                    <div class="score" id="playerScore">0</div>
+                </div>
+                <div class="score-section computer">
+                    <h2>COMPUTER</h2>
+                    <div class="score" id="computerScore">0</div>
+                </div>
+            </div>
+
+            <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+            <div class="controls-info">
+                <div class="desktop-controls">
+                    <p><strong>Desktop:</strong> Mouse Y or Arrow Keys ↑↓</p>
+                </div>
+                <div class="mobile-controls">
+                    <p><strong>Mobile:</strong> Tap or Drag the Left Paddle</p>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="startBtn" class="btn btn-primary">Start Game</button>
+                <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+                <button id="difficultyBtn" class="btn btn-info">Change Difficulty</button>
+                <button id="resetBtn" class="btn btn-danger">Reset Score</button>
+            </div>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat-item">
+                <span class="stat-label">Ball Speed:</span>
+                <span class="stat-value" id="ballSpeed">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Paddle Speed:</span>
+                <span class="stat-value" id="paddleSpeed">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Bounces:</span>
+                <span class="stat-value" id="bounceCount">0</span>
+            </div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
