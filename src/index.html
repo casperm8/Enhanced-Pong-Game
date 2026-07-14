@@ -10,66 +10,360 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="game-header">
-            <h1>🎮 PONG</h1>
-            <div class="game-info">
-                <p class="info-text" id="gameMode">Mobile Mode</p>
-                <p class="info-text" id="difficulty">Difficulty: <span>Medium</span></p>
-                <p class="info-text" id="controlMode">Control: Touch</p>
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Screen Container for Menus/Screens -->
+        <div id="screenContainer" class="screen-container hidden"></div>
+        
+        <!-- Game Container -->
+        <div id="gameContainer" class="game-container">
+            <div class="game-header">
+                <h1 id="gameTitle">🎮 PONG</h1>
+                <div class="game-info">
+                    <p class="info-text" id="gameMode">Mobile Mode</p>
+                    <p class="info-text" id="difficulty">Difficulty: <span>Medium</span></p>
+                    <p class="info-text" id="controlMode">Control: Touch</p>
+                </div>
             </div>
+
+            <div class="game-wrapper">
+                <div class="scoreboard">
+                    <div class="score-section player">
+                        <h2 id="playerLabel">YOU</h2>
+                        <div class="score" id="playerScore">0</div>
+                    </div>
+                    <div class="score-section computer">
+                        <h2 id="opponentLabel">AI</h2>
+                        <div class="score" id="computerScore">0</div>
+                    </div>
+                </div>
+
+                <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+                <!-- Campaign HUD -->
+                <div id="campaignHUD" class="hud-overlay hidden">
+                    <div class="campaign-info">
+                        <div class="level-display">Level <span id="levelNumber">1</span></div>
+                        <div class="target-display">Target: <span id="targetScore">7</span></div>
+                    </div>
+                </div>
+
+                <!-- Online HUD -->
+                <div id="onlineHUD" class="hud-overlay hidden">
+                    <div class="online-info">
+                        <div class="opponent-name" id="opponentName">Opponent</div>
+                        <div class="room-id" id="roomId">Room: ----</div>
+                    </div>
+                </div>
+
+                <div class="controls-info">
+                    <div id="touchControls">
+                        <p><strong>Touch:</strong> Tap or Drag the Left Paddle</p>
+                    </div>
+                    <div id="tiltControls" style="display: none;">
+                        <p><strong>Tilt:</strong> Rotate device to move paddle</p>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="startBtn" class="btn btn-primary">Start</button>
+                    <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
+                    <button id="difficultyBtn" class="btn btn-info">Difficulty</button>
+                    <button id="resetBtn" class="btn btn-danger">Reset</button>
+                    <button id="menuBtn" class="btn btn-warning">Menu</button>
+                </div>
+            </div>
+
+            <div class="game-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Ball Speed:</span>
+                    <span class="stat-value" id="ballSpeed">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Paddle Speed:</span>
+                    <span class="stat-value" id="paddleSpeed">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Bounces:</span>
+                    <span class="stat-value" id="bounceCount">0</span>
+                </div>
+            </div>
+
+            <div class="status-message" id="statusMessage"></div>
         </div>
-
-        <div class="game-wrapper">
-            <div class="scoreboard">
-                <div class="score-section player">
-                    <h2>YOU</h2>
-                    <div class="score" id="playerScore">0</div>
-                </div>
-                <div class="score-section computer">
-                    <h2>AI</h2>
-                    <div class="score" id="computerScore">0</div>
-                </div>
-            </div>
-
-            <canvas id="gameCanvas" width="800" height="400"></canvas>
-
-            <div class="controls-info">
-                <div id="touchControls">
-                    <p><strong>Touch:</strong> Tap or Drag the Left Paddle</p>
-                </div>
-                <div id="tiltControls" style="display: none;">
-                    <p><strong>Tilt:</strong> Rotate device to move paddle</p>
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button id="startBtn" class="btn btn-primary">Start</button>
-                <button id="pauseBtn" class="btn btn-secondary" disabled>Pause</button>
-                <button id="difficultyBtn" class="btn btn-info">Difficulty</button>
-                <button id="resetBtn" class="btn btn-danger">Reset</button>
-                <button id="controlModeBtn" class="btn btn-warning">Control Mode</button>
-            </div>
-        </div>
-
-        <div class="game-stats">
-            <div class="stat-item">
-                <span class="stat-label">Ball Speed:</span>
-                <span class="stat-value" id="ballSpeed">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Paddle Speed:</span>
-                <span class="stat-value" id="paddleSpeed">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Bounces:</span>
-                <span class="stat-value" id="bounceCount">0</span>
-            </div>
-        </div>
-
-        <div class="status-message" id="statusMessage"></div>
     </div>
 
-    <script type="module" src="game-mobile.js"></script>
+    <!-- Main Menu Screen -->
+    <template id="mainMenuTemplate">
+        <div class="screen main-menu">
+            <div class="menu-content">
+                <h1 class="menu-title">🎮 PONG</h1>
+                <p class="menu-subtitle">Mobile Edition</p>
+                
+                <div class="menu-buttons">
+                    <button class="menu-btn primary" data-action="quickplay">
+                        <span class="icon">⚡</span>
+                        <span class="label">Quick Play</span>
+                        <span class="desc">vs AI</span>
+                    </button>
+                    <button class="menu-btn info" data-action="campaign">
+                        <span class="icon">🎯</span>
+                        <span class="label">Campaign</span>
+                        <span class="desc">10 Levels</span>
+                    </button>
+                    <button class="menu-btn success" data-action="online">
+                        <span class="icon">🌐</span>
+                        <span class="label">Online PvP</span>
+                        <span class="desc">Multiplayer</span>
+                    </button>
+                    <button class="menu-btn warning" data-action="settings">
+                        <span class="icon">⚙️</span>
+                        <span class="label">Settings</span>
+                        <span class="desc">Preferences</span>
+                    </button>
+                </div>
+                
+                <div class="menu-footer">
+                    <p class="version">v1.0.0</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Campaign Select Screen -->
+    <template id="campaignSelectTemplate">
+        <div class="screen campaign-select">
+            <div class="screen-header">
+                <button class="back-btn" data-action="back">←</button>
+                <h2>🎯 Campaign Mode</h2>
+                <div class="placeholder"></div>
+            </div>
+            
+            <div class="campaign-stats">
+                <div class="stat">
+                    <span class="label">Highest Level:</span>
+                    <span class="value" id="highestLevel">1</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Total Wins:</span>
+                    <span class="value" id="totalWins">0</span>
+                </div>
+            </div>
+            
+            <div class="levels-container">
+                <div class="levels-grid" id="levelsGrid"></div>
+            </div>
+            
+            <button class="btn btn-secondary" data-action="back">← Back to Menu</button>
+        </div>
+    </template>
+
+    <!-- Online Menu Screen -->
+    <template id="onlineMenuTemplate">
+        <div class="screen online-menu">
+            <div class="screen-header">
+                <button class="back-btn" data-action="back">←</button>
+                <h2>🌐 Online Multiplayer</h2>
+                <div class="placeholder"></div>
+            </div>
+            
+            <div class="online-options">
+                <button class="online-btn" data-action="quickmatch">
+                    <span class="icon">⚡</span>
+                    <span class="label">Quick Match</span>
+                    <span class="desc">Find opponent</span>
+                </button>
+                <button class="online-btn" data-action="create-room">
+                    <span class="icon">➕</span>
+                    <span class="label">Create Room</span>
+                    <span class="desc">Invite friends</span>
+                </button>
+                <button class="online-btn" data-action="join-room">
+                    <span class="icon">🔗</span>
+                    <span class="label">Join Room</span>
+                    <span class="desc">Enter code</span>
+                </button>
+                <button class="online-btn" data-action="leaderboard">
+                    <span class="icon">🏆</span>
+                    <span class="label">Leaderboard</span>
+                    <span class="desc">View rankings</span>
+                </button>
+            </div>
+            
+            <div id="playerProfile" class="player-profile hidden">
+                <h3>Your Profile</h3>
+                <div class="profile-stat">
+                    <span class="label">Username:</span>
+                    <span class="value" id="username">Loading...</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="label">ELO Rating:</span>
+                    <span class="value" id="eloRating">1200</span>
+                </div>
+                <div class="profile-stat">
+                    <span class="label">Win Rate:</span>
+                    <span class="value" id="winRate">50%</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary" data-action="back">← Back to Menu</button>
+        </div>
+    </template>
+
+    <!-- Leaderboard Screen -->
+    <template id="leaderboardTemplate">
+        <div class="screen leaderboard">
+            <div class="screen-header">
+                <button class="back-btn" data-action="back">←</button>
+                <h2>🏆 Leaderboard</h2>
+                <div class="placeholder"></div>
+            </div>
+            
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- Generated by JS -->
+            </div>
+            
+            <button class="btn btn-secondary" data-action="back">← Back</button>
+        </div>
+    </template>
+
+    <!-- Settings Screen -->
+    <template id="settingsTemplate">
+        <div class="screen settings">
+            <div class="screen-header">
+                <button class="back-btn" data-action="back">←</button>
+                <h2>⚙️ Settings</h2>
+                <div class="placeholder"></div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Gameplay</h3>
+                <div class="setting-item">
+                    <label>Control Mode</label>
+                    <select id="controlModeSetting">
+                        <option value="touch">Touch</option>
+                        <option value="tilt">Tilt (Accelerometer)</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Default Difficulty</label>
+                    <select id="defaultDifficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                        <option value="insane">Insane</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Feedback</h3>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="hapticsFeedback" checked>
+                        Haptic Feedback
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="soundEffects">
+                        Sound Effects
+                    </label>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Account</h3>
+                <button class="btn btn-secondary" data-action="login">Sign In / Create Account</button>
+                <button class="btn btn-danger" data-action="logout" id="logoutBtn" style="display:none;">Logout</button>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Data</h3>
+                <button class="btn btn-warning" data-action="reset-progress">Reset Progress</button>
+                <button class="btn btn-info" data-action="clear-cache">Clear Cache</button>
+            </div>
+            
+            <button class="btn btn-secondary" data-action="back">← Back to Menu</button>
+        </div>
+    </template>
+
+    <!-- Game Result Overlay -->
+    <template id="gameResultTemplate">
+        <div class="overlay game-result" id="gameResultOverlay">
+            <div class="result-card" id="resultCard">
+                <div class="result-header">
+                    <h2 id="resultTitle">Victory!</h2>
+                </div>
+                
+                <div class="final-score">
+                    <div class="player-score">
+                        <div class="label">You</div>
+                        <div class="score" id="resultPlayerScore">0</div>
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="opponent-score">
+                        <div class="label" id="resultOpponentLabel">AI</div>
+                        <div class="score" id="resultOpponentScore">0</div>
+                    </div>
+                </div>
+                
+                <div class="result-stats">
+                    <div class="stat">
+                        <span class="label">Bounces:</span>
+                        <span class="value" id="resultBounces">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Duration:</span>
+                        <span class="value" id="resultDuration">0s</span>
+                    </div>
+                    <div class="stat" id="resultLevelReward" style="display:none;">
+                        <span class="label">Reward:</span>
+                        <span class="value" id="rewardText">+50 XP</span>
+                    </div>
+                </div>
+                
+                <div class="result-buttons">
+                    <button class="btn btn-primary" data-action="retry">🔄 Retry</button>
+                    <button class="btn btn-secondary" data-action="menu">🏠 Menu</button>
+                    <button class="btn btn-info" data-action="next-level" id="nextLevelBtn" style="display:none;">Next Level ➜</button>
+                </div>
+                
+                <div id="resultMessage" class="result-message"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Matchmaking Overlay -->
+    <template id="matchmakingTemplate">
+        <div class="overlay matchmaking-modal">
+            <div class="modal-card">
+                <h2>Finding Match...</h2>
+                <div class="loading-spinner"></div>
+                <p id="matchmakingStatus">Searching for opponent</p>
+                <button class="btn btn-danger" data-action="cancel-matchmaking">Cancel</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Join Room Modal -->
+    <template id="joinRoomTemplate">
+        <div class="overlay modal-overlay">
+            <div class="modal-card">
+                <h2>Join Room</h2>
+                <input type="text" id="roomCodeInput" placeholder="Enter 6-char room code" maxlength="6" class="room-code-input">
+                <div class="modal-buttons">
+                    <button class="btn btn-primary" data-action="confirm-join-room">Join</button>
+                    <button class="btn btn-secondary" data-action="cancel-modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script type="module" src="game-system.js"></script>
+    <script type="module" src="network-manager.js"></script>
+    <script type="module" src="ui-manager.js"></script>
+    <script type="module" src="game-mobile-enhanced.js"></script>
 </body>
 </html>
